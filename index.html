@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabla — Mobilier pour restos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #F5F1EB;
+      --bg-warm: #EDE8DF;
+      --text:    #111111;
+      --muted:   #666;
+      --accent:  #C46A3C;
+      --green:   #5E6F5E;
+      --white:   #fff;
+      --radius:  14px;
+      --shadow:  0 2px 16px rgba(0,0,0,.08);
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 800px;
+      margin: 0 auto;
+      padding-bottom: 72px;
+      overflow-x: hidden;
+    }
+
+    .wrap { padding: 0 28px; }
+    .section { padding: 56px 28px; }
+    .hw { font-family: 'Caveat', cursive; font-weight: 600; }
+    .eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px;
+    }
+
+    /* ═══ SCROLL REVEAL ═══ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .7s cubic-bezier(.16,1,.3,1),
+                  transform .7s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: .1s; }
+    .reveal-d2 { transition-delay: .2s; }
+    .reveal-d3 { transition-delay: .3s; }
+
+    /* stagger grid children */
+    .stagger > * {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .55s cubic-bezier(.16,1,.3,1),
+                  transform .55s cubic-bezier(.16,1,.3,1);
+    }
+    .stagger.in > *:nth-child(1) { transition-delay: .0s; }
+    .stagger.in > *:nth-child(2) { transition-delay: .12s; }
+    .stagger.in > *:nth-child(3) { transition-delay: .24s; }
+    .stagger.in > *:nth-child(4) { transition-delay: .36s; }
+    .stagger.in > *:nth-child(5) { transition-delay: .48s; }
+    .stagger.in > * { opacity: 1; transform: none; }
+
+    /* ═══ HERO TEXT LINE REVEAL ═══ */
+    .hl { display: block; overflow: hidden; line-height: 1.08; }
+    .hli {
+      display: block;
+      transform: translateY(110%);
+      opacity: 0;
+      transition: transform .8s cubic-bezier(.16,1,.3,1),
+                  opacity .5s ease;
+    }
+    .hero-left.loaded .hli             { transform: none; opacity: 1; }
+    .hero-left.loaded .hl:nth-child(1) .hli { transition-delay: .05s; }
+    .hero-left.loaded .hl:nth-child(2) .hli { transition-delay: .18s; }
+    .hero-left.loaded .hl:nth-child(3) .hli { transition-delay: .28s; }
+    .hero-left.loaded .hl:nth-child(4) .hli { transition-delay: .40s; }
+    .hero-left.loaded .hero-sub  { animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .55s both; }
+    .hero-left.loaded .hero-btns { animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .68s both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ═══ FLOATING PILLS ═══ */
+    @keyframes floatA {
+      0%,100% { transform: rotate(-6deg) translateY(0px); }
+      50%     { transform: rotate(-6deg) translateY(-8px); }
+    }
+    @keyframes floatB {
+      0%,100% { transform: rotate(4deg) translateY(0px); }
+      50%     { transform: rotate(4deg) translateY(-10px); }
+    }
+    @keyframes floatC {
+      0%,100% { transform: rotate(-3deg) translateY(0px); }
+      50%     { transform: rotate(-3deg) translateY(-6px); }
+    }
+
+    /* ═══ REDUCED MOTION ═══ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+      .reveal, .stagger > *, .hli {
+        opacity: 1 !important; transform: none !important;
+      }
+    }
+
+    /* ═══ BUTTONS ═══ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 22px; border-radius: 50px;
+      font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: transform .18s cubic-bezier(.16,1,.3,1),
+                  box-shadow .18s ease;
+      white-space: nowrap; position: relative;
+    }
+    .btn-dark {
+      background: var(--text); color: #fff;
+      box-shadow: 0 3px 14px rgba(0,0,0,.22);
+    }
+    .btn-dark:hover { box-shadow: 0 6px 22px rgba(0,0,0,.32); }
+    .btn-ghost { background: transparent; color: var(--text); border: 2px solid rgba(0,0,0,.15); }
+    .btn-full  { width: 100%; justify-content: center; }
+    .btn-wa    { background: #fff; color: var(--text); border: 2px solid #ddd8cf; }
+    .wa-svg    { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+
+    /* ═══ NAV ═══ */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; position: sticky; top: 0; z-index: 100;
+      background: rgba(245,241,235,.94);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: -.5px; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .nav-wa {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; padding: 8px 14px;
+      border-radius: 50px; text-decoration: none; color: var(--text);
+      border: 1.5px solid rgba(0,0,0,.12);
+    }
+    .nav-cta {
+      font-size: 13px; font-weight: 700; padding: 9px 18px;
+      border-radius: 50px; background: var(--text); color: #fff;
+      text-decoration: none; display: flex; align-items: center; gap: 6px;
+    }
+    .nav-burger {
+      width: 38px; height: 38px; border-radius: 8px;
+      border: 1.5px solid rgba(0,0,0,.12); background: none;
+      cursor: pointer; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; gap: 4px;
+    }
+    .nav-burger span { display: block; width: 16px; height: 1.5px; background: var(--text); border-radius: 2px; }
+
+    /* ═══ HERO ═══ */
+    .hero {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 380px; overflow: hidden;
+    }
+    .hero-left {
+      padding: 40px 28px 40px 28px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .hero-left h1 { font-size: 34px; font-weight: 900; letter-spacing: -.6px; margin-bottom: 0; }
+    .hero-left h1 .big {
+      display: block; font-size: 46px; font-weight: 900;
+      color: var(--accent); letter-spacing: -1.5px; line-height: 1;
+      position: relative;
+    }
+    .hero-left h1 .big::after {
+      content: ''; display: block; height: 3px;
+      background: var(--accent); border-radius: 2px;
+      margin-top: 3px; width: 92%;
+    }
+    .hero-sub {
+      font-size: 15px; color: var(--muted);
+      line-height: 1.55; margin: 18px 0 26px;
+    }
+    .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* hero image parallax container */
+    .hero-right {
+      position: relative; overflow: hidden;
+    }
+    .hero-right img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transform-origin: center top;
+      will-change: transform;
+      filter: contrast(1.08) saturate(1.18) brightness(.96);
+    }
+
+    /* Pills */
+    .pill {
+      position: absolute; border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .04em;
+      line-height: 1.25; text-align: center;
+      will-change: transform;
+    }
+    .pill-design {
+      width: 76px; height: 76px; background: var(--green); color: #fff;
+      top: 22px; left: 22px;
+      animation: floatA 3.2s ease-in-out infinite;
+      box-shadow: 0 8px 22px rgba(0,0,0,.28); z-index: 2;
+    }
+    .pill-main {
+      width: 66px; height: 66px; background: #fff; color: var(--text);
+      top: 68px; left: 68px;
+      animation: floatB 3.8s ease-in-out infinite .4s;
+      box-shadow: 0 6px 18px rgba(0,0,0,.2); z-index: 3;
+    }
+    .pill-prix {
+      width: 72px; height: 72px; background: var(--accent); color: #fff;
+      bottom: 22px; left: 22px;
+      animation: floatC 4.2s ease-in-out infinite .8s;
+      box-shadow: 0 8px 24px rgba(196,106,60,.45); z-index: 2;
+    }
+
+    /* ═══ PROOF STRIP ═══ */
+    .proof {
+      display: flex; overflow-x: auto; scrollbar-width: none;
+      background: var(--text); color: #fff;
+      padding: 14px 28px; gap: 0;
+    }
+    .proof::-webkit-scrollbar { display: none; }
+    .proof-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0; padding-right: 28px;
+    }
+    .proof-item svg { flex-shrink: 0; opacity: .7; }
+
+    /* ═══ PROBLÈME ═══ */
+    .probleme { background: var(--bg-warm); padding: 48px 28px; }
+    .probleme h2 {
+      font-size: 28px; font-weight: 900;
+      letter-spacing: -.4px; margin-bottom: 28px;
+    }
+    .probleme h2 u { text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+    .price-row { display: flex; gap: 12px; align-items: flex-start; }
+    .price-cards-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; }
+    .price-card {
+      background: #fff; border-radius: var(--radius);
+      border: 1.5px solid rgba(0,0,0,.09); overflow: hidden;
+      box-shadow: var(--shadow); display: flex; flex-direction: column;
+      transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease;
+    }
+    .price-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+    .price-card.good { border-color: var(--accent); box-shadow: 0 4px 18px rgba(196,106,60,.18); }
+    .price-card img { width: 100%; height: 100px; object-fit: cover; display: block; }
+    .price-card-body {
+      padding: 12px 12px 10px;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex: 1;
+    }
+    .price-card-body .price { font-size: 20px; font-weight: 900; letter-spacing: -.4px; line-height: 1; }
+    .price-card-body .verdict { font-size: 12px; color: #999; margin-top: 3px; }
+    .price-card-body .verdict.ok { color: var(--accent); font-weight: 700; }
+    .badge { font-size: 15px; font-weight: 700; }
+    .badge.cross { color: #ccc; }
+    .badge.check { color: var(--accent); }
+    .meh-bubble {
+      flex-shrink: 0; width: 110px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding-top: 16px;
+    }
+    .meh-bubble .meh-text {
+      font-family: 'Caveat', cursive; font-size: 17px; font-weight: 600;
+      color: #999; line-height: 1.3; text-align: center;
+    }
+    .meh-bubble .meh-face { font-size: 28px; margin-top: 6px; }
+
+    /* ═══ PRODUIT ═══ */
+    .produit { padding: 64px 28px 72px; }
+    .produit h2 { font-size: 26px; font-weight: 900; letter-spacing: -.4px; line-height: 1.2; margin-bottom: 28px; }
+    .produit h2 em { font-style: italic; font-family: 'Playfair Display', serif; color: var(--accent); }
+    .produit-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px; }
+    .produit-card {
+      background: #fff; border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s ease;
+      will-change: transform;
+    }
+    .produit-card img { width: 100%; height: 150px; object-fit: cover; display: block; transition: transform .4s ease; }
+    .produit-card:hover img { transform: scale(1.05); }
+    .produit-card-body { padding: 14px 14px 16px; }
+    .produit-card-body h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .produit-card-body p  { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
+    .produit-card-body .from { font-size: 12px; font-weight: 700; color: var(--accent); }
+    .see-all-wrap { text-align: center; }
+    .see-all {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border: 2px solid var(--text);
+      border-radius: 50px; font-size: 14px; font-weight: 700;
+      text-decoration: none; color: var(--text);
+      transition: background .18s, color .18s;
+    }
+    .see-all:hover { background: var(--text); color: #fff; }
+
+    /* ═══ MATÉRIAUX ═══ */
+    .materiaux-wrap { padding: 0 28px 64px; }
+    .materiaux {
+      background: linear-gradient(150deg, #0e0e0e 0%, #1c1a18 70%, #211f1b 100%);
+      border-radius: 20px; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr; color: #fff;
+    }
+    .mat-left { padding: 40px 32px; }
+    .mat-left h2 { font-size: 28px; font-weight: 900; line-height: 1.15; letter-spacing: -.5px; margin-bottom: 24px; }
+    .mat-items { display: flex; flex-direction: column; }
+    .mat-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.08);
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .mat-item:last-child { border-bottom: none; }
+    .materiaux.in .mat-item:nth-child(1) { transition-delay: .1s; opacity: 1; transform: none; }
+    .materiaux.in .mat-item:nth-child(2) { transition-delay: .2s; opacity: 1; transform: none; }
+    .materiaux.in .mat-item:nth-child(3) { transition-delay: .3s; opacity: 1; transform: none; }
+    .materiaux.in .mat-item:nth-child(4) { transition-delay: .4s; opacity: 1; transform: none; }
+    .materiaux.in .mat-item:nth-child(5) { transition-delay: .5s; opacity: 1; transform: none; }
+    .mat-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0; margin-top: 2px;
+    }
+    .mat-item-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .mat-item-text p  { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.4; }
+    .guarantee-row { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+    .g-chip {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .mat-right { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .mat-right img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mat-annotation {
+      position: absolute; bottom: 28px; left: 20px;
+      font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700;
+      color: rgba(255,255,255,.85); line-height: 1.2;
+    }
+    .mat-annotation::after { content: '↓'; display: block; font-size: 20px; margin-top: 2px; }
+
+    /* ═══ SUR-MESURE ═══ */
+    .sur-mesure {
+      padding: 56px 28px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 36px; align-items: center;
+    }
+    .sm-left h2 { font-size: 26px; font-weight: 900; line-height: 1.2; letter-spacing: -.4px; margin-bottom: 10px; }
+    .sm-left p { font-size: 15px; color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+    .pinterest-wrap { background: #fff; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .pinterest-split { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+    .pinterest-col { position: relative; overflow: hidden; }
+    .pinterest-col img { width: 100%; height: 190px; object-fit: cover; display: block; transition: transform .4s ease; }
+    .pinterest-col:hover img { transform: scale(1.04); }
+    .pinterest-col .col-label {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(0,0,0,.6); color: #fff; font-size: 10px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .pinterest-col.right .col-label { left: auto; right: 8px; background: var(--accent); }
+    .pinterest-arrow {
+      width: 36px; height: 36px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 16px; font-weight: 900; flex-shrink: 0; z-index: 2;
+      box-shadow: 0 4px 12px rgba(196,106,60,.4);
+    }
+    .pinterest-captions { padding: 10px 14px 12px; text-align: center; }
+    .pinterest-caption { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 600; color: #888; }
+    .pinterest-sub { font-family: 'Caveat', cursive; font-size: 14px; color: #bbb; }
+
+    /* ═══ TEST ═══ */
+    .test {
+      background: var(--bg-warm); padding: 56px 28px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+    }
+    .test-left h2 { font-size: 24px; font-weight: 900; letter-spacing: -.4px; margin-bottom: 4px; }
+    .test-annotation {
+      font-family: 'Caveat', cursive; font-size: 26px; font-weight: 700;
+      color: var(--accent); line-height: 1.2; margin-bottom: 20px;
+    }
+    .test-img img {
+      width: 80%; display: block; margin: 0 auto;
+      filter: drop-shadow(0 14px 36px rgba(0,0,0,.2));
+      transition: transform .4s cubic-bezier(.16,1,.3,1);
+    }
+    .test-img:hover img { transform: translateY(-6px) scale(1.02); }
+    .test-perks {
+      background: #fff; border-radius: var(--radius); padding: 18px;
+      display: flex; flex-direction: column; gap: 10px;
+      box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .test-perk { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+    .test-perk-icon {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--bg);
+      font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ═══ KARIM ═══ */
+    .karim-section { padding: 56px 28px; }
+    .karim-inner {
+      background: #fff; border-radius: 20px; overflow: hidden;
+      box-shadow: var(--shadow);
+      display: grid; grid-template-columns: 200px 1fr auto; align-items: stretch;
+    }
+    .karim-photo { position: relative; overflow: hidden; }
+    .karim-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: sepia(.12) contrast(1.06) brightness(.98);
+      transition: transform .6s ease;
+    }
+    .karim-inner:hover .karim-photo img { transform: scale(1.04); }
+    .karim-body { padding: 32px 28px; }
+    .karim-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .karim-pre   { font-size: 13px; color: #999; font-style: italic; margin-bottom: 10px; }
+    .karim-body h2 { font-size: 20px; font-weight: 900; letter-spacing: -.3px; margin-bottom: 14px; line-height: 1.25; }
+    .karim-body p  { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+    .karim-body ul { list-style: none; margin-bottom: 12px; }
+    .karim-body ul li { font-size: 14px; color: var(--muted); padding: 3px 0 3px 18px; position: relative; }
+    .karim-body ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+    .karim-body .conclusion { font-size: 16px; font-weight: 800; line-height: 1.35; }
+    .karim-body .conclusion em { color: var(--accent); font-style: normal; }
+    .karim-right {
+      padding: 32px 28px 32px 0;
+      display: flex; flex-direction: column;
+      justify-content: space-between; align-items: flex-end; min-width: 160px;
+    }
+    .karim-tagline { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; color: var(--text); text-align: right; line-height: 1.4; }
+    .karim-tagline span { display: block; }
+    .karim-ctas { display: flex; flex-direction: column; gap: 8px; }
+
+    /* ═══ USE CASES ═══ */
+    .lifestyle { padding: 56px 28px; }
+    .lifestyle h2 { font-size: 28px; font-weight: 900; letter-spacing: -.5px; line-height: 1.15; margin-bottom: 32px; }
+    .use-cases-row { display: flex; overflow-x: auto; scrollbar-width: none; gap: 8px; padding-bottom: 4px; }
+    .use-cases-row::-webkit-scrollbar { display: none; }
+    .use-case {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: #fff; border-radius: 14px; padding: 14px 16px;
+      flex-shrink: 0; box-shadow: var(--shadow);
+      transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s ease;
+    }
+    .use-case:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+    .use-case .icon { font-size: 24px; }
+    .use-case .label { font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+    /* ═══ CTA FINAL ═══ */
+    .cta-final-wrap { padding: 0 28px 64px; }
+    .cta-final {
+      background: var(--accent); color: #fff; border-radius: 20px;
+      padding: 44px 36px; text-align: center;
+      box-shadow: 0 8px 40px rgba(196,106,60,.3);
+    }
+    .cta-final h2 { font-size: 26px; font-weight: 900; letter-spacing: -.4px; margin-bottom: 8px; }
+    .cta-final p  { font-size: 14px; opacity: .8; margin-bottom: 28px; }
+    .cta-final-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .cta-final .btn-white {
+      background: #fff; color: var(--accent); font-size: 15px; font-weight: 800;
+      padding: 14px 28px; border-radius: 50px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.15);
+    }
+    .cta-final .btn-ghost-white {
+      background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.45);
+      font-size: 14px; font-weight: 700; padding: 13px 24px; border-radius: 50px;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    }
+
+    /* ═══ FOOTER ═══ */
+    footer { text-align: center; padding: 32px 28px 20px; font-size: 12px; color: #bbb; }
+    .footer-logo { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+    .footer-logo span { color: var(--accent); }
+
+    /* ═══ STICKY CTA ═══ */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 800px;
+      background: rgba(245,241,235,.96); backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0,0,0,.07); padding: 10px 20px;
+      display: flex; gap: 10px; z-index: 200;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.1);
+    }
+    .sticky-cta a { flex: 1; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 640px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { height: 280px; }
+      .price-cards-group { grid-template-columns: 1fr; }
+      .meh-bubble { display: none; }
+      .produit-row { grid-template-columns: 1fr; }
+      .materiaux { grid-template-columns: 1fr; }
+      .mat-right { height: 200px; }
+      .sur-mesure { grid-template-columns: 1fr; }
+      .test { grid-template-columns: 1fr; }
+      .karim-inner { grid-template-columns: 1fr; }
+      .karim-photo img { height: 240px; }
+      .karim-right { padding: 0 24px 24px; align-items: flex-start; min-width: auto; }
+      .cta-final-btns { flex-direction: column; }
+      .cta-final-btns a { width: 100%; justify-content: center; }
+      nav .nav-wa { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#" class="logo">tabla<span>.</span></a>
+  <div class="nav-right">
+    <a href="https://wa.me/33600000000" class="nav-wa">
+      <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+    <a href="#devis" class="nav-cta">Demander un devis →</a>
+    <button class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-left">
+    <h1>
+      <span class="hl"><span class="hli">Ton resto</span></span>
+      <span class="hl"><span class="hli">est OK.</span></span>
+      <span class="hl"><span class="hli">Mais il peut être</span></span>
+      <span class="hl"><span class="hli"><span class="big">BEAUCOUP MIEUX.</span></span></span>
+    </h1>
+    <p class="hero-sub">Du mobilier design, sur-mesure,<br>au bon prix. Fabriqué pour durer.</p>
+    <div class="hero-btns">
+      <a href="#devis" class="btn btn-dark magnetic">Demander un devis →</a>
+      <a href="https://wa.me/33600000000" class="btn btn-ghost">
+        <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+  <div class="hero-right" id="heroRight">
+    <img id="heroImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=85" alt="Restaurant" />
+    <div class="pill pill-design">Design<br>Premium</div>
+    <div class="pill pill-main">Fait<br>Main</div>
+    <div class="pill pill-prix">Prix<br>Juste</div>
+  </div>
+</section>
+
+<!-- ═══ PROOF STRIP ═══ -->
+<div class="proof">
+  <div class="proof-item">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+    Jusqu'à -40% vs Europe
+  </div>
+  <div class="proof-item">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+    Livraison 6–8 semaines
+  </div>
+  <div class="proof-item">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Suivi en direct
+  </div>
+  <div class="proof-item">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    Fabrication artisanale
+  </div>
+  <div class="proof-item">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    Paiement sécurisé
+  </div>
+</div>
+
+<!-- ═══ PROBLÈME ═══ -->
+<section class="probleme">
+  <div class="eyebrow reveal">Le vrai problème</div>
+  <h2 class="reveal reveal-d1"><u>Tu veux</u> un lieu stylé.</h2>
+  <div class="price-row">
+    <div class="price-cards-group stagger">
+      <div class="price-card">
+        <img src="https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=400&q=70" alt="Luxe" loading="lazy" />
+        <div class="price-card-body">
+          <div class="left">
+            <div class="price" data-target="18" data-suffix="K €">18K €</div>
+            <div class="verdict">Trop cher.</div>
+          </div>
+          <div class="badge cross">✕</div>
+        </div>
+      </div>
+      <div class="price-card">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=70" alt="Cheap" loading="lazy" />
+        <div class="price-card-body">
+          <div class="left">
+            <div class="price" data-target="4" data-suffix="K €">4K €</div>
+            <div class="verdict">Trop bas de gamme.</div>
+          </div>
+          <div class="badge cross">✕</div>
+        </div>
+      </div>
+      <div class="price-card good">
+        <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=400&q=70" alt="Bonne option" loading="lazy" />
+        <div class="price-card-body">
+          <div class="left">
+            <div class="price" data-target="7.8" data-suffix="K €">7,8K €</div>
+            <div class="verdict ok">La bonne option. ✓</div>
+          </div>
+          <div class="badge check">✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="meh-bubble reveal reveal-d3">
+      <div class="meh-text">Et au final…<br>ça rend moyen.</div>
+      <div class="meh-face">😕</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUIT ═══ -->
+<section class="produit">
+  <div class="eyebrow reveal">Le mobilier</div>
+  <h2 class="reveal reveal-d1">C'est pas "juste des meubles".<br>C'est <em>ton image.</em></h2>
+  <div class="produit-row stagger">
+    <div class="produit-card tilt">
+      <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=600&q=75" alt="La chaise" loading="lazy" />
+      <div class="produit-card-body">
+        <h3>La chaise</h3>
+        <p>La première chose qu'ils voient.</p>
+        <div class="from">À partir de 129 €</div>
+      </div>
+    </div>
+    <div class="produit-card tilt">
+      <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=75" alt="La table" loading="lazy" />
+      <div class="produit-card-body">
+        <h3>La table</h3>
+        <p>C'est là qu'ils restent.</p>
+        <div class="from">À partir de 349 €</div>
+      </div>
+    </div>
+    <div class="produit-card tilt">
+      <img src="https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600&q=75" alt="La banquette" loading="lazy" />
+      <div class="produit-card-body">
+        <h3>La banquette</h3>
+        <p>C'est là qu'ils reviennent.</p>
+        <div class="from">À partir de 890 € / ml</div>
+      </div>
+    </div>
+  </div>
+  <p class="reveal reveal-d2" style="font-size:14px;color:var(--muted);text-align:center;margin-bottom:20px;font-style:italic;">
+    On ne vend pas sur catalogue. Tu décris, on construit.
+  </p>
+  <div class="see-all-wrap reveal reveal-d3">
+    <a href="https://wa.me/33600000000?text=Bonjour%2C%20je%20veux%20un%20devis%20sur-mesure%20pour%20mon%20resto." class="see-all magnetic">Le catalogue, c'est toi qui le crées →</a>
+  </div>
+</section>
+
+<!-- ═══ MATÉRIAUX ═══ -->
+<div class="materiaux-wrap">
+  <div class="materiaux reveal">
+    <div class="mat-left">
+      <div class="tag" style="background:var(--green);margin-bottom:20px;">Qualité</div>
+      <h2>Ça doit être beau.<br>Et le rester.</h2>
+      <div class="mat-items">
+        <div class="mat-item"><div class="mat-icon">🪵</div><div class="mat-item-text"><h4>Bois massif</h4><p>Chêne, noyer, hêtre — selon ton projet</p></div></div>
+        <div class="mat-item"><div class="mat-icon">🪨</div><div class="mat-item-text"><h4>Pierre & matériaux haut de gamme</h4><p>Finition à la main par nos artisans</p></div></div>
+        <div class="mat-item"><div class="mat-icon">🧵</div><div class="mat-item-text"><h4>Tissus techniques</h4><p>Conçu pour usage intensif, facile d'entretien</p></div></div>
+        <div class="mat-item"><div class="mat-icon">🛡️</div><div class="mat-item-text"><h4>Conçu pour un usage intensif</h4><p>Hôtellerie-restauration exigeant</p></div></div>
+        <div class="mat-item"><div class="mat-icon">⭐</div><div class="mat-item-text"><h4>Garantie 5 ans structure & 2 ans tissus</h4><p>On assume dans la durée</p></div></div>
+      </div>
+      <div class="guarantee-row">
+        <div class="g-chip">Garantie 5 ans</div>
+        <div class="g-chip">2 ans tissus</div>
+        <div class="g-chip">pas du jetable.</div>
+      </div>
+    </div>
+    <div class="mat-right">
+      <img src="https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=600&q=80" alt="Mobilier" loading="lazy" />
+      <div class="mat-annotation">pas du<br>jetable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUR-MESURE ═══ -->
+<section class="sur-mesure">
+  <div class="sm-left reveal">
+    <div class="eyebrow">Sur-mesure</div>
+    <h2>T'as vu un truc stylé ?<br>On s'en occupe.</h2>
+    <p>Envoie-nous une photo,<br>on s'occupe du reste.</p>
+    <a href="https://wa.me/33600000000" class="btn btn-dark magnetic">Parler de mon projet →</a>
+  </div>
+  <div class="sm-right reveal reveal-d2">
+    <div class="pinterest-wrap">
+      <div class="pinterest-split">
+        <div class="pinterest-col">
+          <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=400&q=70" alt="Inspiration" loading="lazy" />
+          <div class="col-label">📌 Ton inspiration</div>
+        </div>
+        <div class="pinterest-arrow">→</div>
+        <div class="pinterest-col right">
+          <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&q=70" alt="Réalisation" loading="lazy" />
+          <div class="col-label">Notre réalisation</div>
+        </div>
+      </div>
+      <div class="pinterest-captions">
+        <div class="pinterest-caption">Pinterest → réel</div>
+        <div class="pinterest-sub">Tu vois un truc → on le refait</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TEST ═══ -->
+<section class="test">
+  <div class="test-left reveal">
+    <div class="eyebrow">Test-Drive</div>
+    <h2>Teste-le dans ton resto.</h2>
+    <div class="test-annotation">Pas en photo.<br>En vrai.</div>
+    <div class="test-img">
+      <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=500&q=80" alt="Test chaise" loading="lazy" />
+    </div>
+  </div>
+  <div class="test-right reveal reveal-d2">
+    <div class="test-perks">
+      <div class="test-perk"><div class="test-perk-icon">📦</div>Expédié en 48h</div>
+      <div class="test-perk"><div class="test-perk-icon">💳</div>Déduit de ta 1ère commande</div>
+      <div class="test-perk"><div class="test-perk-icon">🔓</div>Sans engagement</div>
+    </div>
+    <a href="#devis" class="btn btn-dark btn-full magnetic">Commander un test →</a>
+  </div>
+</section>
+
+<!-- ═══ KARIM ═══ -->
+<section class="karim-section">
+  <div class="karim-inner reveal">
+    <div class="karim-photo">
+      <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80" alt="Karim" loading="lazy" />
+    </div>
+    <div class="karim-body">
+      <div class="karim-label">Moi, c'est Karim.</div>
+      <p class="karim-pre">J'ai vu trop de restos se faire avoir.</p>
+      <h2>Ancien restaurateur<br>pendant +15 ans.</h2>
+      <p>J'ai vu des restos payer trop cher.</p>
+      <ul><li>trop cher</li><li>mal pensé</li><li>galère</li></ul>
+      <p>Alors <u>j'ai créé Tabla.</u></p>
+      <div class="conclusion">Des produits beaux. Au bon prix.<br><em>Sans prise de tête.</em></div>
+    </div>
+    <div class="karim-right">
+      <div class="karim-tagline hw"><span>simple.</span><span>rapide.</span><span>efficace.</span></div>
+      <div class="karim-ctas">
+        <a href="#devis" class="btn btn-dark magnetic" style="font-size:13px;padding:11px 18px;">Demander un devis →</a>
+        <a href="https://wa.me/33600000000" class="btn btn-wa" style="font-size:13px;padding:10px 18px;">
+          <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ USE CASES ═══ -->
+<section class="lifestyle">
+  <div class="eyebrow reveal">Adapté pour tous les concepts</div>
+  <h2 class="reveal reveal-d1">On fait mieux<br>que ce que t'as en tête.</h2>
+  <div class="use-cases-row stagger">
+    <div class="use-case"><div class="icon">🍕</div><div class="label">Pizzerias</div></div>
+    <div class="use-case"><div class="icon">🍔</div><div class="label">Burgers</div></div>
+    <div class="use-case"><div class="icon">🥩</div><div class="label">Steakhouse</div></div>
+    <div class="use-case"><div class="icon">🥐</div><div class="label">Crousty</div></div>
+    <div class="use-case"><div class="icon">☕</div><div class="label">Brunch</div></div>
+    <div class="use-case"><div class="icon">🌯</div><div class="label">Kebab</div></div>
+    <div class="use-case"><div class="icon">☕</div><div class="label">Cafés</div></div>
+    <div class="use-case"><div class="icon">🥖</div><div class="label">Boulangeries</div></div>
+    <div class="use-case"><div class="icon">···</div><div class="label">Et plus encore</div></div>
+  </div>
+</section>
+
+<!-- ═══ CTA FINAL ═══ -->
+<div id="devis" class="cta-final-wrap">
+  <div class="cta-final reveal">
+    <h2>On fait mieux que ce que t'as en tête.</h2>
+    <p>Devis gratuit · Réponse sous 24h · Sans engagement</p>
+    <div class="cta-final-btns">
+      <a href="mailto:contact@tabla.fr" class="btn-white">Demander un devis →</a>
+      <a href="https://wa.me/33600000000" class="btn-ghost-white">
+        <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-logo">tabla<span>.</span></div>
+  <p>© 2025 Tabla — Mobilier pour restaurants</p>
+</footer>
+
+<!-- ═══ STICKY CTA ═══ -->
+<div class="sticky-cta">
+  <a href="https://wa.me/33600000000" class="btn btn-wa" style="justify-content:center;">
+    <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp
+  </a>
+  <a href="#devis" class="btn btn-dark" style="flex:2;justify-content:center;">Demander un devis →</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT — all effects
+═══════════════════════════════════════════ -->
+<script>
+(function () {
+  const isTouch = 'ontouchstart' in window;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ─── 1. HERO TEXT LINE REVEAL ─── */
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const heroLeft = document.querySelector('.hero-left');
+      if (heroLeft) heroLeft.classList.add('loaded');
+    });
+  });
+
+  /* ─── 2. SCROLL REVEAL (IntersectionObserver) ─── */
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal, .stagger, .materiaux').forEach(el => {
+    revealObs.observe(el);
+  });
+
+  /* ─── 3. HERO PARALLAX (desktop only) ─── */
+  if (!isTouch && !prefersReduced) {
+    const heroImg = document.getElementById('heroImg');
+    const heroRight = document.getElementById('heroRight');
+    if (heroImg && heroRight) {
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const scrollY = window.scrollY;
+            const heroH = heroRight.offsetHeight;
+            if (scrollY < heroH + 200) {
+              heroImg.style.transform = `scale(1.08) translateY(${scrollY * 0.15}px)`;
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+  }
+
+  /* ─── 4. CARD 3D TILT (desktop only) ─── */
+  if (!isTouch && !prefersReduced) {
+    document.querySelectorAll('.tilt').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  - 0.5) * 14;
+        const y = ((e.clientY - r.top)  / r.height - 0.5) * 14;
+        card.style.transform = `perspective(700px) rotateY(${x}deg) rotateX(${-y}deg) translateZ(10px)`;
+        card.style.boxShadow = `${-x * 1.2}px ${-y * 1.2}px 28px rgba(0,0,0,.13)`;
+        card.style.transition = 'box-shadow .1s ease';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.boxShadow = '';
+        card.style.transition = 'transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s ease';
+      });
+    });
+  }
+
+  /* ─── 5. MAGNETIC BUTTONS (desktop only) ─── */
+  if (!isTouch && !prefersReduced) {
+    document.querySelectorAll('.magnetic').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width  / 2) * 0.28;
+        const y = (e.clientY - r.top  - r.height / 2) * 0.28;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
+        setTimeout(() => btn.style.transition = '', 500);
+      });
+    });
+  }
+
+  /* ─── 6. COUNTER ANIMATION ─── */
+  function countUp(el) {
+    if (prefersReduced) return;
+    const raw      = el.dataset.target;
+    const suffix   = el.dataset.suffix || '';
+    const target   = parseFloat(raw);
+    const isFloat  = raw.includes('.');
+    const duration = 1400;
+    const start    = performance.now();
+
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 3); // ease out cubic
+      const v = e * target;
+      el.textContent = (isFloat ? v.toFixed(1) : Math.round(v)) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const cntObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.done) {
+        e.target.dataset.done = '1';
+        countUp(e.target);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  document.querySelectorAll('[data-target]').forEach(el => cntObs.observe(el));
+
+})();
+</script>
+</body>
+</html>
